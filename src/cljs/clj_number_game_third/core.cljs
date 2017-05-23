@@ -5,9 +5,14 @@
               [clj-number-game-third.subs]
               [clj-number-game-third.views :as views]))
 
+(enable-console-print!)
+
 (defn mount-root []
 	(reagent/render [views/container]
 		(.getElementById js/document "app")))
+
+(defn key-down []
+)
 
 (defn ^:export init []
   (re-frame/dispatch-sync [:initialize-db])

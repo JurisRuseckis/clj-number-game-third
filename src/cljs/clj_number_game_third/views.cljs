@@ -14,15 +14,15 @@
 (defn restart-button []
 	[:a.restart-button "New game"])
 
-(defn score [& score]
+(defn score [score]
 	(into [:div.score-container
 		{:default-value "0"}] score))
 
-(defn best-score [& best-score]
+(defn best-score [best-score]
 	(into [:div.best-container
 		{:default-value "0"}] best-score))
 
-(defn game-cell [id]
+(defn grid-cell []
 	[:div.grid-cell])
 
 ;; molecules
@@ -30,11 +30,20 @@
 (defn score-board [& contents]
 	(into [:div.scores-container] contents))
 
-(defn game-row [id]
+(defn grid-row []
 	[:div.grid-row
 		(for [n (range 1 5)]
 			  ^{:key n}
-			  [game-cell n])])
+			  [grid-cell])])
+
+(defn grid-container []
+	[:div.grid-container
+		(for [n (range 1 5)]
+			  ^{:key n}
+              [grid-row])])
+
+(defn tile-container []
+	[:div.tile-container ])
 
 ;; organisms
 (defn header [& contents]
@@ -45,9 +54,10 @@
 
 (defn game-container []
 	[:div.game-container
-		(for [n (range 1 5)]
-              ^{:key n}
-              [game-row n])])
+		[grid-container]
+		[tile-container]])
+
+
 
 (defn copyrights []
 	[:div.game-explanation
@@ -57,6 +67,8 @@
 ;;container
 (defn container []
 	[:div.container
+		[:input {:style {:display "none"}
+				 :on-key-press #(println (.-charCode %))}]
 		[header
 			[title]
 			[score-board
