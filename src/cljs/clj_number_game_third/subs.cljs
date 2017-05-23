@@ -4,3 +4,8 @@
             [re-frame.db :refer [app-db]]
             [reagent.ratom :as ra]))
 
+(defn- game-state [db]
+  (get-in db [:game-state]))
+
+(defn game-state- []
+  (reaction (game-state @app-db)))

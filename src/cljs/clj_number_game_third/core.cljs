@@ -11,9 +11,6 @@
 	(reagent/render [views/container]
 		(.getElementById js/document "app")))
 
-(defn key-down []
-)
-
 (defn ^:export init []
   (re-frame/dispatch-sync [:initialize-db])
   (mount-root))
