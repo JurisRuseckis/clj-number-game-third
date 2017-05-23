@@ -8,9 +8,9 @@
 (enable-console-print!)
 
 (defn mount-root []
+	(re-frame/dispatch-sync [:initialize-db])
 	(reagent/render [views/container]
 		(.getElementById js/document "app")))
 
 (defn ^:export init []
-  (re-frame/dispatch-sync [:initialize-db])
   (mount-root))

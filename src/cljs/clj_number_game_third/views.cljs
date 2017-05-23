@@ -4,6 +4,9 @@
             [clj_number_game_third.subs :as sb]
             [clojure.string :as string]))
 
+(defn exp2 [n]
+     (if (zero? n) 1
+         (* 2 (exp2 (dec n)))))
 ;; atoms
 (defn title []
 	[:h1.title "2048"])
@@ -13,25 +16,30 @@
 		[:strong] "2048 tile!"])
 
 (defn restart-button []
-	[:a.restart-button "New game"])
+	[:a.restart-button {:on-click #(rf/dispatch [:reset-game])}
+	 "New game"])
 
-(defn score [score]
-	(into [:div.score-container
-		{:default-value "0"}] score))
+(defn score []
+	(let [score- (sb/get-score-)]
+	[:div.score-container @score-] ))
 
-(defn best-score [best-score]
-	(into [:div.best-container
-		{:default-value "0"}] best-score))
+(defn best-score []
+	(let [best-score- (sb/get-best-score-)]
+	 	 [:div.best-container @best-score-] ))
 
 (defn grid-cell []
 	[:div.grid-cell])
 
-(defn tile [x y val]
+(defn tile [id]
+	( let [tile-map- (sb/get-tile- id)
+		   x (:x @tile-map-)
+		   y (:y @tile-map-)
+		   val (:val @tile-map-)]
 	[:div {:class (string/join " " ["tile" (string/join "-" ["tile" val]) (string/join "-" ["tile-position" x y ])])}
-		[:div.tile-inner val]])
+		(when (> val 0)
+			[:div.tile-inner (exp2 val)])]))
 
 ;; molecules
-
 (defn score-board [& content]
 	(into [:div.scores-container] content))
 
@@ -61,10 +69,9 @@
 	[:div.game-container
 		[grid-container]
 		[tile-container
-			[tile 1 1 2]
-			[tile 2 2 16]
-			[tile 3 3 32]
-			[tile 4 4 128]]])
+			(for [x (range 1 17)]
+			 ^{:key x}
+			  [tile x])]])
 
 (defn copyrights []
 	[:div.game-explanation

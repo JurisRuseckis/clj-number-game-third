@@ -1,1 +1,1 @@
-(ns clj-number-game-thirdcore)
+(ns clj-number-game-third.core)
