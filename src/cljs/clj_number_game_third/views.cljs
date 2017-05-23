@@ -1,7 +1,8 @@
 (ns clj-number-game-third.views
   (:require [re-frame.core :as rf]
             [reagent.core :as ra]
-            [clj_number_game_third.subs :as sb]))
+            [clj_number_game_third.subs :as sb]
+            [clojure.string :as string]))
 
 ;; atoms
 (defn title []
@@ -25,10 +26,14 @@
 (defn grid-cell []
 	[:div.grid-cell])
 
+(defn tile [x y val]
+	[:div {:class (string/join " " ["tile" (string/join "-" ["tile" val]) (string/join "-" ["tile-position" x y ])])}
+		[:div.tile-inner val]])
+
 ;; molecules
 
-(defn score-board [& contents]
-	(into [:div.scores-container] contents))
+(defn score-board [& content]
+	(into [:div.scores-container] content))
 
 (defn grid-row []
 	[:div.grid-row
@@ -42,22 +47,24 @@
 			  ^{:key n}
               [grid-row])])
 
-(defn tile-container []
-	[:div.tile-container ])
+(defn tile-container [& content]
+	(into [:div.tile-container] content))
 
 ;; organisms
-(defn header [& contents]
-	(into [:div.heading] contents))
+(defn header [& content]
+	(into [:div.heading] content))
 
-(defn above-game [& contents]
-	(into [:div.above-game] contents))
+(defn above-game [& content]
+	(into [:div.above-game] content))
 
 (defn game-container []
 	[:div.game-container
 		[grid-container]
-		[tile-container]])
-
-
+		[tile-container
+			[tile 1 1 2]
+			[tile 2 2 16]
+			[tile 3 3 32]
+			[tile 4 4 128]]])
 
 (defn copyrights []
 	[:div.game-explanation
@@ -67,8 +74,6 @@
 ;;container
 (defn container []
 	[:div.container
-		[:input {:style {:display "none"}
-				 :on-key-press #(println (.-charCode %))}]
 		[header
 			[title]
 			[score-board
