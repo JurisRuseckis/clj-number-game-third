@@ -9,22 +9,22 @@
 	 :score				0
 	 :best-score		0
 	 :empty-tiles		[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
-	 :tiles				{1	{:x 1 :y 1 :val nil}
-						 2	{:x 2 :y 1 :val nil}
-						 3	{:x 3 :y 1 :val nil}
-						 4	{:x 4 :y 1 :val nil}
-	 					 5	{:x 1 :y 2 :val nil}
-	 					 6	{:x 2 :y 2 :val nil}
-	 					 7	{:x 3 :y 2 :val nil}
-	 					 8	{:x 4 :y 2 :val nil}
-	 					 9	{:x 1 :y 3 :val nil}
-	 					 10	{:x 2 :y 3 :val nil}
-	 					 11	{:x 3 :y 3 :val nil}
-	 					 12	{:x 4 :y 3 :val nil}
-	 					 13	{:x 1 :y 4 :val nil}
-	 					 14	{:x 2 :y 4 :val nil}
-	 					 15	{:x 3 :y 4 :val nil}
-	 					 16	{:x 4 :y 4 :val nil}}
+	 :tiles				{1	{:x 1 :y 1 :val 0}
+						 2	{:x 2 :y 1 :val 0}
+						 3	{:x 3 :y 1 :val 1}
+						 4	{:x 4 :y 1 :val 0}
+	 					 5	{:x 1 :y 2 :val 0}
+	 					 6	{:x 2 :y 2 :val 0}
+	 					 7	{:x 3 :y 2 :val 0}
+	 					 8	{:x 4 :y 2 :val 0}
+	 					 9	{:x 1 :y 3 :val 0}
+	 					 10	{:x 2 :y 3 :val 0}
+	 					 11	{:x 3 :y 3 :val 0}
+	 					 12	{:x 4 :y 3 :val 0}
+	 					 13	{:x 1 :y 4 :val 0}
+	 					 14	{:x 2 :y 4 :val 0}
+	 					 15	{:x 3 :y 4 :val 0}
+	 					 16	{:x 4 :y 4 :val 0}}
 	 :rows				[[1 2 3 4]
 	 					 [5 6 7 8]
 	 					 [9 10 11 12]

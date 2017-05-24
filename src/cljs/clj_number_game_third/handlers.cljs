@@ -8,31 +8,30 @@
   (fn [_ _]
     db/default-db))
 
-(defn get-direction [key]
-	(if (contains? #{38, 75, 87} key) 0
-	(if (contains? #{39, 76, 68} key) 1
-	(if (contains? #{40, 74, 83} key) 2
-	(if (contains? #{37, 72, 65} key) 3 "false")))))
-
-(defn keydown [e]
-	(println (.-keyCode e) (get-direction (.-keyCode e)))
-	(fn [db [_]]
-	(assoc-in db [:game-state] :processing-input))
-	(rf/dispatch [:keydown (get-direction (.-keyCode e))]))
-
-(defn move-tiles [db])
+(defn rand-tile [db]
+	(let [empty-tiles- (filter #(= (:val (second %)) 0) (get-in db [:tiles]))]
+			(if (not-empty empty-tiles-)
+				(first (rand-nth empty-tiles-))
+				0)))
 
 (rf/reg-event-db
   :keydown
   (fn [db [_ direction]]
   	(let [tiles (get-in db [:tiles])]
-  		(->
-            		(assoc-in db [:tiles (+ 1 (rand-int 16)) :val] 1)
-            		(assoc-in [:game-state] :waiting-input)))))
+  	(->
+  		(assoc-in db [:game-state] :processing-input)
+		(assoc-in [:tiles (rand-tile db) :val] 1)
+		(assoc-in [:game-state] :waiting-input)))))
 
 (rf/reg-event-db
   :catch-key
-  (set! (.-onkeydown js/document) keydown))
+  (set! (.-onkeydown js/document) (fn [e]
+  	(let [key (.-keyCode e)
+		  direction (if (contains? #{38, 75, 87} key) 0
+				    (if (contains? #{39, 76, 68} key) 1
+				    (if (contains? #{40, 74, 83} key) 2
+				    (if (contains? #{37, 72, 65} key) 3 "false"))))]
+		(rf/dispatch [:keydown direction])))))
 
 (rf/reg-event-db
   :reset-game
@@ -40,7 +39,7 @@
   	(let [tiles (get-in db [:tiles])]
 	  (->
 	  	(assoc-in db [:tiles] (reduce (fn [tiles [index value]]
-										(assoc tiles index (assoc value :val nil)))
+										(assoc tiles index (assoc value :val 0)))
 									  {}
 									  tiles))
 		(assoc-in [:tiles (+ 1 (rand-int 16)) :val] 1)
