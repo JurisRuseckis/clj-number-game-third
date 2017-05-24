@@ -32,12 +32,19 @@
 
 (defn tile [id]
 	( let [tile-map- (sb/get-tile- id)
+		   game-state- (sb/game-state-)
 		   x (:x @tile-map-)
 		   y (:y @tile-map-)
 		   val (:val @tile-map-)]
-	[:div {:class (string/join " " ["tile" (string/join "-" ["tile" val]) (string/join "-" ["tile-position" x y ])])}
+	[:div {:class (string/join " "
+					["tile"
+					 (string/join "-" ["tile" val])
+					 (if (= :processing-input @game-state-)
+					 	(string/join "-" ["tile-position" 1 1 ])
+					 	(string/join "-" ["tile-position" x y ]))])}
 		(when (> val 0)
-			[:div.tile-inner (exp2 val)])]))
+			[:div.tile-inner (exp2 val)])
+			[:span {:style {:font-size 10}} @game-state-]]))
 
 ;; molecules
 (defn score-board [& content]
