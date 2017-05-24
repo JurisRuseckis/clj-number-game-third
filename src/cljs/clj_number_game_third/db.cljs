@@ -11,7 +11,7 @@
 	 :empty-tiles		[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
 	 :tiles				{1	{:x 1 :y 1 :val 0}
 						 2	{:x 2 :y 1 :val 0}
-						 3	{:x 3 :y 1 :val 1}
+						 3	{:x 3 :y 1 :val 0}
 						 4	{:x 4 :y 1 :val 0}
 	 					 5	{:x 1 :y 2 :val 0}
 	 					 6	{:x 2 :y 2 :val 0}

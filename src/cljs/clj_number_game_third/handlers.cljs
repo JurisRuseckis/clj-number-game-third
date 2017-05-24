@@ -15,13 +15,17 @@
 				0)))
 
 (rf/reg-event-db
+  :add-tile
+  (fn [db [_]]
+  	(assoc-in db [:tiles (rand-tile db) :val] (if (> (rand 1) 0.9) 2 1))))
+
+(rf/reg-event-db
   :keydown
   (fn [db [_ direction]]
   	(let [tiles (get-in db [:tiles])]
-  	(->
   		(assoc-in db [:game-state] :processing-input)
-		(assoc-in [:tiles (rand-tile db) :val] 1)
-		(assoc-in [:game-state] :waiting-input)))))
+		(rf/dispatch [:add-tile])
+		(assoc-in db [:game-state] :waiting-input))))
 
 (rf/reg-event-db
   :catch-key
@@ -42,8 +46,8 @@
 										(assoc tiles index (assoc value :val 0)))
 									  {}
 									  tiles))
-		(assoc-in [:tiles (+ 1 (rand-int 16)) :val] 1)
-		(assoc-in [:tiles (+ 1 (rand-int 16)) :val] 1)
+		(assoc-in [:tiles (rand-tile db) :val] (if (> (rand 1) 0.9) 2 1))
+		(assoc-in [:tiles (rand-tile db) :val] (if (> (rand 1) 0.9) 2 1))
 		(assoc-in [:game-state] :waiting-input)))))
 
 (rf/reg-event-db
