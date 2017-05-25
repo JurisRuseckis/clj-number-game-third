@@ -8,6 +8,22 @@
   (fn [_ _]
     db/default-db))
 
+;; god bless stack overflow for this function
+;;(defn assoc-all
+;;  [v ks value]
+;;  (reduce #(assoc %1 %2 value) v ks))
+
+(defn assoc-all
+  [v ks value]
+  (persistent!
+    (reduce
+      #(assoc! %1 %2 value)
+      (transient v)
+      ks)))
+
+;;(assoc-in-all [1 2 3 4] [0 1] [1 2])
+;; => [2 2 3 4]
+
 (defn rand-tile [db]
 	(let [empty-tiles- (filter #(= (:val (second %)) 0) (get-in db [:tiles]))]
 			(if (not-empty empty-tiles-)
@@ -22,12 +38,27 @@
 (rf/reg-event-db
   :apply-tile-change
   (fn [db [_ from to value]]
-  	(let [tiles (get-in db [:tiles ])]
-  		(assoc-in tiles [to :val] val)
-  		(assoc-in tiles [from :val] 0)
+  	(let [tiles- (get-in db [:tiles ])]
+  		;;(assoc-in tiles- [to :val] val)
+  		;;(assoc-in tiles- [from :val] 0)
+  		;;(println tiles-)
+
+		;;(assoc-in db [:tiles to :val]  value)
+		(assoc-in db [:tiles] (reduce (fn [tiles [index valuefn]]
+												(if (= index to)
+													;;(println valuefn)
+													(assoc tiles index (assoc valuefn :val value))
+													;;(println index value)
+													(if (= index from)
+														(assoc tiles index (assoc valuefn :val 0))
+														(assoc tiles index (assoc valuefn :val (:val valuefn))))))
+        									  {}
+        									  tiles-))
+		;;(assoc-in db [:tiles from :val] 0)
+		;;(rf/dispatch [:reset-tile from])
 		;;(assoc-in db [:tiles to :val] value)
-		(println tiles)
-		(assoc-in db [:tiles] tiles)
+		;;(println tiles)
+		;;(assoc-in db [:tiles] tiles)
 		)))
 
 (defn move-tiles [db direction]
@@ -43,14 +74,11 @@
 								(do (let [compareable-tile (:val (tiles (row (- @steps 1)))) ]
 										(if (= compareable-tile 0)
 											(let []
-												;;(if (= @steps 1) (println "move to end"))
 												(if (= @steps 1) (rf/dispatch [:apply-tile-change (row x) (row (- @steps 1)) this-tile-val]))
 												(swap! steps dec))
 											(let []
 												(if (= compareable-tile this-tile-val)
-													;;(println "merge")
 													(rf/dispatch [:apply-tile-change (row x) (row (- @steps 1)) (+ this-tile-val 1)])
-													;;(println "move to furthest empty"))
 													(rf/dispatch [:apply-tile-change (row x) (row @steps) this-tile-val]))
 												(reset! steps 0))))))))))
 		  tiles)
