@@ -5,7 +5,7 @@
             [clojure.string :as string]))
 
 (defn exp2 [n]
-     (if (zero? n) 1
+     (if (<= n 0) 1
          (* 2 (exp2 (dec n)))))
 ;; atoms
 (defn title []
@@ -38,13 +38,12 @@
 		   val (:val @tile-map-)]
 	[:div {:class (string/join " "
 					["tile"
-					 (string/join "-" ["tile" val])
+					 (string/join "-" ["tile" (exp2 val)])
 					 (if (= :processing-input @game-state-)
 					 	(string/join "-" ["tile-position" 1 1 ])
 					 	(string/join "-" ["tile-position" x y ]))])}
 		(when (> val 0)
-			[:div.tile-inner (exp2 val)])
-			[:span {:style {:font-size 10}} @game-state-]]))
+			[:div.tile-inner (exp2 val)])]))
 
 ;; molecules
 (defn score-board [& content]

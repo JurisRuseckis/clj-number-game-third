@@ -2,7 +2,7 @@
 	(:require [re-frame.core :as rf]
 			  [clj_number_game_third.db :as db]
 			  [clj_number_game_third.subs :as sb]))
-
+;; reg db
 (rf/reg-event-db
   :initialize-db
   (fn [_ _]
@@ -15,6 +15,48 @@
 				0)))
 
 (rf/reg-event-db
+  :reset-tile
+  (fn [db [_ from]]
+  	(assoc-in db [:tiles from :val] 0)))
+
+(rf/reg-event-db
+  :apply-tile-change
+  (fn [db [_ from to value]]
+  	(let [tiles (get-in db [:tiles ])]
+  		(assoc-in tiles [to :val] val)
+  		(assoc-in tiles [from :val] 0)
+		;;(assoc-in db [:tiles to :val] value)
+		(println tiles)
+		(assoc-in db [:tiles] tiles)
+		)))
+
+(defn move-tiles [db direction]
+	(let [tiles (get-in db [:tiles])
+		  rows (get-in db [:rows direction])]
+		  (doall
+			  (for [row rows]
+				(for [x (range 1 4)]
+					(let [steps (atom x)
+						  this-tile-val (:val (tiles (row x)))]
+						(if-not (= this-tile-val 0)
+							(while (pos? @steps)
+								(do (let [compareable-tile (:val (tiles (row (- @steps 1)))) ]
+										(if (= compareable-tile 0)
+											(let []
+												;;(if (= @steps 1) (println "move to end"))
+												(if (= @steps 1) (rf/dispatch [:apply-tile-change (row x) (row (- @steps 1)) this-tile-val]))
+												(swap! steps dec))
+											(let []
+												(if (= compareable-tile this-tile-val)
+													;;(println "merge")
+													(rf/dispatch [:apply-tile-change (row x) (row (- @steps 1)) (+ this-tile-val 1)])
+													;;(println "move to furthest empty"))
+													(rf/dispatch [:apply-tile-change (row x) (row @steps) this-tile-val]))
+												(reset! steps 0))))))))))
+		  tiles)
+		  ))
+
+(rf/reg-event-db
   :add-tile
   (fn [db [_]]
   	(assoc-in db [:tiles (rand-tile db) :val] (if (> (rand 1) 0.9) 2 1))))
@@ -22,10 +64,12 @@
 (rf/reg-event-db
   :keydown
   (fn [db [_ direction]]
-  	(let [tiles (get-in db [:tiles])]
-  		(assoc-in db [:game-state] :processing-input)
-		(rf/dispatch [:add-tile])
-		(assoc-in db [:game-state] :waiting-input))))
+  	(if (not= direction "false")
+  		(let [tiles (get-in db [:tiles])]
+			;;(rf/dispatch [:add-tile])
+			(move-tiles db direction)
+			(assoc-in db [:tiles (rand-tile db) :val] (if (> (rand 1) 0.9) 2 1))))
+		))
 
 (rf/reg-event-db
   :catch-key
@@ -48,14 +92,4 @@
 									  tiles))
 		(assoc-in [:tiles (rand-tile db) :val] (if (> (rand 1) 0.9) 2 1))
 		(assoc-in [:tiles (rand-tile db) :val] (if (> (rand 1) 0.9) 2 1))
-		(assoc-in [:game-state] :waiting-input)))))
-
-(rf/reg-event-db
-  :game-won
-  (fn [db _]
-  	(assoc-in db [:game-state] :won)))
-
-(rf/reg-event-db
-  :game-lost
-  (fn [db _]
-  	(assoc-in db [:game-state] :lost)))
+		))))
