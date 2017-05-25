@@ -39,27 +39,14 @@
   :apply-tile-change
   (fn [db [_ from to value]]
   	(let [tiles- (get-in db [:tiles ])]
-  		;;(assoc-in tiles- [to :val] val)
-  		;;(assoc-in tiles- [from :val] 0)
-  		;;(println tiles-)
-
-		;;(assoc-in db [:tiles to :val]  value)
 		(assoc-in db [:tiles] (reduce (fn [tiles [index valuefn]]
 												(if (= index to)
-													;;(println valuefn)
 													(assoc tiles index (assoc valuefn :val value))
-													;;(println index value)
 													(if (= index from)
 														(assoc tiles index (assoc valuefn :val 0))
 														(assoc tiles index (assoc valuefn :val (:val valuefn))))))
         									  {}
-        									  tiles-))
-		;;(assoc-in db [:tiles from :val] 0)
-		;;(rf/dispatch [:reset-tile from])
-		;;(assoc-in db [:tiles to :val] value)
-		;;(println tiles)
-		;;(assoc-in db [:tiles] tiles)
-		)))
+        									  tiles-)))))
 
 (defn move-tiles [db direction]
 	(let [tiles (get-in db [:tiles])
@@ -77,7 +64,9 @@
 												(if (= @steps 1) (rf/dispatch [:apply-tile-change (row x) (row (- @steps 1)) this-tile-val]))
 												(swap! steps dec))
 											(let []
-												(if (= compareable-tile this-tile-val)
+												(println (:new (tiles (row (- @steps 1)))))
+												(if (and (= compareable-tile this-tile-val)
+														 (nil? (:new (tiles (row (- @steps 1))))))
 													(rf/dispatch [:apply-tile-change (row x) (row (- @steps 1)) (+ this-tile-val 1)])
 													(rf/dispatch [:apply-tile-change (row x) (row @steps) this-tile-val]))
 												(reset! steps 0))))))))))
@@ -94,7 +83,10 @@
   (fn [db [_ direction]]
   	(if (not= direction "false")
   		(let [tiles (get-in db [:tiles])]
-			;;(rf/dispatch [:add-tile])
+			(assoc-in db [:tiles] (reduce (fn [tiles [index value]]
+                										(assoc tiles index (dissoc value :key)))
+                									  {}
+                									  tiles))
 			(move-tiles db direction)
 			(assoc-in db [:tiles (rand-tile db) :val] (if (> (rand 1) 0.9) 2 1))))
 		))
