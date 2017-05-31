@@ -1,10 +1,28 @@
 # clj-number-game-third
 
-FIXME: Write a one-line description of your library/project.
+to start to operate with this project you need to download and install leiningen here - https://leiningen.org/
 
+afterwards navigate to project folder in terminal.
+if you want to run project in development mode then run
+
+	lein clean
+	lein figwheel
+
+if you want to compile project then run
+
+	lein do clean, cljsbuild once min
+
+and afterwards open this file in a browser 
+ 
+	/project/resources/public/index.html 
+	
 ## Overview
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+Partially recreated 2048 in clojurescript from
+
+	https://github.com/gabrielecirulli/2048
+	
+
 
 ## Setup
 
