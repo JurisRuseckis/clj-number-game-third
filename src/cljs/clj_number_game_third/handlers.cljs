@@ -64,7 +64,7 @@
 												(if (= @steps 1) (rf/dispatch [:apply-tile-change (row x) (row (- @steps 1)) this-tile-val]))
 												(swap! steps dec))
 											(let []
-												(println (:new (tiles (row (- @steps 1)))))
+												;;(println (:new (tiles (row (- @steps 1)))))
 												(if (and (= compareable-tile this-tile-val)
 														 (nil? (:new (tiles (row (- @steps 1))))))
 													(rf/dispatch [:apply-tile-change (row x) (row (- @steps 1)) (+ this-tile-val 1)])
